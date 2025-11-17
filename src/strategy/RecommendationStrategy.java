@@ -1,4 +1,5 @@
 package strategy;
 
-public class RecommendationStrategy {
+public interface RecommendationStrategy {
+    String recommendCourse(String username);
 }

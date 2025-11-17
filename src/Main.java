@@ -1,15 +1,52 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import builder.*;
+import factory.*;
+import strategy.*;
+import decorator.*;
+import observer.*;
+import facade.*;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        // 1) BUILDER + FACTORY
+
+        CourseBuilder builder = new CourseBuilder()
+                .setTitle("Java Masterclass")
+                .setDescription("Full Java Course")
+                .setDifficulty(4)
+                .addModule("Intro")
+                .addModule("OOP");
+
+        builder.addContent(new VideoFactory().createContent());
+        builder.addContent(new TextFactory().createContent());
+        builder.addContent(new QuizFactory().createContent());
+
+        Course course = builder.build();
+        course.showCourse();
+
+
+        // 2) STRATEGY + DECORATOR
+
+        RecommendationStrategy strategy =
+                new HighlightDecorator(
+                        new PopularStrategy()
+                );
+
+        System.out.println(strategy.recommendCourse("Alice"));
+
+
+        // 3) OBSERVER + FACADE
+
+        NotificationFacade facade = new NotificationFacade();
+
+        AssignmentService assignmentService = new AssignmentService();
+
+        Student alice = new Student("Alice", facade);
+        Student bob = new Student("Bob", facade);
+
+        assignmentService.addObserver(alice);
+        assignmentService.addObserver(bob);
+
+        assignmentService.gradeAssignment("Alice", 95);
     }
 }

@@ -1,4 +1,5 @@
 package factory;
 
-public class Content {
+public interface Content {
+    void display();
 }

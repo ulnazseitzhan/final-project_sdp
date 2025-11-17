@@ -1,0 +1,155 @@
+@startuml
+title ONLINE EDUCATION PLATFORM - FULL PROJECT UML
+
+' =======================
+'       BUILDER + FACTORY
+' =======================
+
+package builder {
+    class Course {
+        - title: String
+        - description: String
+        - difficulty: int
+        - modules: List<String>
+        - contents: List<Content>
+        + addContent(Content): void
+        + showCourse(): void
+    }
+
+    class CourseBuilder {
+        - title: String
+        - description: String
+        - difficulty: int
+        - modules: List<String>
+        - contents: List<Content>
+        + setTitle(String): CourseBuilder
+        + setDescription(String): CourseBuilder
+        + setDifficulty(int): CourseBuilder
+        + addModule(String): CourseBuilder
+        + addContent(Content): CourseBuilder
+        + build(): Course
+    }
+}
+
+package factory {
+    interface Content {
+        + display(): void
+    }
+
+    abstract class ContentFactory {
+        + createContent(): Content
+    }
+
+    class VideoContent { + display(): void }
+    class TextContent { + display(): void }
+    class QuizContent { + display(): void }
+
+    class VideoFactory { + createContent(): Content }
+    class TextFactory { + createContent(): Content }
+    class QuizFactory { + createContent(): Content }
+}
+
+CourseBuilder --> Course : builds >
+Course "1" *-- "many" Content
+CourseFactory <|-- VideoFactory
+CourseFactory <|-- TextFactory
+CourseFactory <|-- QuizFactory
+Content <|-- VideoContent
+Content <|-- TextContent
+Content <|-- QuizContent
+
+
+' =======================
+'  STRATEGY + DECORATOR
+' =======================
+
+package strategy {
+    interface RecommendationStrategy {
+        + recommendCourse(String): String
+    }
+
+    class PopularStrategy { + recommendCourse(String): String }
+    class PersonalizedStrategy { + recommendCourse(String): String }
+    class NewestStrategy { + recommendCourse(String): String }
+}
+
+package decorator {
+    abstract class RecommendationDecorator implements RecommendationStrategy {
+        - wrappee: RecommendationStrategy
+    }
+
+    class HighlightDecorator {
+        + recommendCourse(String): String
+    }
+
+    class BonusContentDecorator {
+        + recommendCourse(String): String
+    }
+}
+
+RecommendationStrategy <|-- PopularStrategy
+RecommendationStrategy <|-- PersonalizedStrategy
+RecommendationStrategy <|-- NewestStrategy
+
+RecommendationDecorator o-- RecommendationStrategy
+RecommendationDecorator <|-- HighlightDecorator
+RecommendationDecorator <|-- BonusContentDecorator
+
+
+' =======================
+'     OBSERVER + FACADE
+' =======================
+
+package observer {
+    interface Observer { + update(String): void }
+    interface Subject {
+        + addObserver(Observer)
+        + removeObserver(Observer)
+        + notifyObservers(String)
+    }
+
+    class AssignmentService {
+        - observers: List<Observer>
+        + gradeAssignment(String, int)
+    }
+
+    class Student {
+        - name: String
+        - notificationFacade: NotificationFacade
+        + update(String)
+    }
+}
+
+package facade {
+    class NotificationFacade {
+        - emailService: EmailService
+        - pushService: PushService
+        - smsService: SmsService
+        + notifyAllChannels(String, String)
+    }
+
+    class EmailService { + sendEmail(String, String) }
+    class PushService  { + sendPush(String, String) }
+    class SmsService   { + sendSms(String, String) }
+}
+
+Subject <|-- AssignmentService
+Observer <|-- Student
+Student --> NotificationFacade
+AssignmentService --> Observer : notifies >
+NotificationFacade --> EmailService
+NotificationFacade --> PushService
+NotificationFacade --> SmsService
+
+' =======================
+'       MAIN
+' =======================
+
+class Main
+Main ..> CourseBuilder
+Main ..> ContentFactory
+Main ..> RecommendationStrategy
+Main ..> AssignmentService
+Main ..> NotificationFacade
+
+@enduml

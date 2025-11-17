@@ -1,4 +1,5 @@
 package factory;
 
-public class ContentFactory {
+public abstract class ContentFactory {
+    public abstract Content createContent();
 }
